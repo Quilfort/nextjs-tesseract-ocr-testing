@@ -4,12 +4,12 @@ First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Sources
+
+- https://tesseract.projectnaptha.com/
+- https://github.com/naptha/tesseract.js#tesseractjs
+
