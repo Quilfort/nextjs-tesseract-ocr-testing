@@ -1,0 +1,1 @@
+# nextjs-tesseract-ocr-testing
