@@ -3,9 +3,13 @@
 import { useState } from "react";
 
 import ImageUpload from "@/features/ocr/components/ImageUpload";
+import OcrResult from "@/features/ocr/components/OcrResult";
+import OcrEngineSelector, {
+    OcrEngineType,
+} from "@/features/ocr/components/OcrEngineSelector";
 
-import { ocrEngine }
-    from "@/features/ocr/services/OcrService";
+import { ocrEngine } from "@/features/ocr/services/OcrService";
+
 
 export default function OcrScanner() {
 
@@ -24,6 +28,11 @@ export default function OcrScanner() {
     const [progress, setProgress] =
         useState(0);
 
+    const [engine, setEngine] =
+        useState<OcrEngineType>(
+            "tesseract"
+        );
+
 
     async function scanImage() {
 
@@ -31,9 +40,11 @@ export default function OcrScanner() {
             return;
         }
 
+
         setLoading(true);
         setText("");
         setProgress(0);
+
 
         try {
 
@@ -43,7 +54,11 @@ export default function OcrScanner() {
                     setProgress
                 );
 
-            setText(result.text);
+
+            setText(
+                result.text
+            );
+
 
         } catch (error) {
 
@@ -52,6 +67,7 @@ export default function OcrScanner() {
             setText(
                 "Something went wrong while scanning the image."
             );
+
 
         } finally {
 
@@ -64,22 +80,33 @@ export default function OcrScanner() {
     return (
         <div className="space-y-8">
 
+
+            <OcrEngineSelector
+                value={engine}
+                onChange={setEngine}
+            />
+
+
             <ImageUpload
                 image={image}
                 preview={preview}
-                onImageChange={(
-                    file,
-                    previewUrl
-                ) => {
-
-                    setImage(file);
-                    setPreview(
+                onImageChange={
+                    (
+                        file,
                         previewUrl
-                    );
+                    ) => {
 
-                    setText("");
-                }}
+                        setImage(file);
+
+                        setPreview(
+                            previewUrl
+                        );
+
+                        setText("");
+                    }
+                }
             />
+
 
             <section>
 
@@ -107,35 +134,16 @@ export default function OcrScanner() {
                             ? `Scanning ${progress}%`
                             : "Extract Text"
                     }
+
                 </button>
 
             </section>
 
-            <section>
 
-                <h2 className="mb-3 text-lg font-semibold text-slate-900">
-                    Result
-                </h2>
+            <OcrResult
+                text={text}
+            />
 
-                <pre
-                    className="
-                        min-h-40
-                        whitespace-pre-wrap
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        bg-slate-50
-                        p-5
-                        text-slate-800
-                    "
-                >
-                    {
-                        text ||
-                        "No text detected yet."
-                    }
-                </pre>
-
-            </section>
 
         </div>
     );

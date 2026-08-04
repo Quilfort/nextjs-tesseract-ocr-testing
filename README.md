@@ -8,7 +8,13 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Sources
+
+
+
+
+## Engines
+
+### Tesseract.js
 
 - https://tesseract.projectnaptha.com/
 - https://github.com/naptha/tesseract.js#tesseractjs
