@@ -10,6 +10,9 @@ import OcrEngineSelector, {
 
 import { ocrEngine } from "@/features/ocr/services/OcrService";
 
+import {
+    BasicImageProcessor,
+} from "@/features/ocr/image-processing/BasicImageProcessor";
 
 export default function OcrScanner() {
 
@@ -33,6 +36,9 @@ export default function OcrScanner() {
             "tesseract"
         );
 
+    const imageProcessor =
+        new BasicImageProcessor();
+
 
     async function scanImage() {
 
@@ -48,9 +54,15 @@ export default function OcrScanner() {
 
         try {
 
+            const processedImage =
+                await imageProcessor.process(
+                    image
+                );
+
+
             const result =
                 await ocrEngine.recognize(
-                    image,
+                    processedImage,
                     setProgress
                 );
 

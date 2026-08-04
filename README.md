@@ -12,6 +12,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 
 
+
 ## Engines
 
 ### Tesseract.js
@@ -19,3 +20,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - https://tesseract.projectnaptha.com/
 - https://github.com/naptha/tesseract.js#tesseractjs
 
+## Image Processing
+
+
+- https://www.npmjs.com/package/browser-image-compression
+- 
