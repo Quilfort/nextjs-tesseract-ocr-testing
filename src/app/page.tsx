@@ -1,4 +1,4 @@
-import OcrScanner from "@/components/OcrScanner";
+import OcrScanner from "@/features/ocr/components/OcrScanner";
 
 export default function Home() {
   return (
