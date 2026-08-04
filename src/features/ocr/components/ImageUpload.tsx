@@ -1,18 +1,23 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import { createWorker } from "tesseract.js";
 
-export default function OcrScanner() {
-    const [image, setImage] = useState<File | null>(null);
-    const [preview, setPreview] = useState("");
-    const [text, setText] = useState("");
+type ImageUploadProps = {
+    image: File | null;
+    preview: string;
+    onImageChange: (
+        file: File,
+        preview: string
+    ) => void;
+};
 
-    const [loading, setLoading] = useState(false);
-    const [progress, setProgress] = useState(0);
+export default function ImageUpload({
+    image,
+    preview,
+    onImageChange,
+}: ImageUploadProps) {
 
-    function handleImageChange(
+    function handleFileChange(
         event: React.ChangeEvent<HTMLInputElement>
     ) {
         const file = event.target.files?.[0];
@@ -21,65 +26,17 @@ export default function OcrScanner() {
             return;
         }
 
-        setImage(file);
-        setText("");
+        const previewUrl =
+            URL.createObjectURL(file);
 
-        const imageUrl = URL.createObjectURL(file);
-        setPreview(imageUrl);
-    }
-
-    async function scanImage() {
-        if (!image) {
-            return;
-        }
-
-        setLoading(true);
-        setText("");
-        setProgress(0);
-
-        try {
-            const worker = await createWorker(
-                ["eng", "nld"],
-                1,
-                {
-                    logger: (message) => {
-                        if (
-                            message.status ===
-                            "recognizing text"
-                        ) {
-                            setProgress(
-                                Math.round(
-                                    message.progress * 100
-                                )
-                            );
-                        }
-                    },
-                }
-            );
-
-            const result = await worker.recognize(
-                image
-            );
-
-            setText(result.data.text);
-
-            await worker.terminate();
-        } catch (error) {
-            console.error(error);
-
-            setText(
-                "Something went wrong while scanning the image."
-            );
-        } finally {
-            setLoading(false);
-        }
+        onImageChange(
+            file,
+            previewUrl
+        );
     }
 
     return (
-        <div className="space-y-8">
-
-            {/* Upload */}
-
+        <>
             <section>
                 <h2 className="mb-3 text-lg font-semibold text-slate-900">
                     Upload Image
@@ -144,16 +101,15 @@ export default function OcrScanner() {
                     id="image-upload"
                     type="file"
                     accept="image/*"
-                    onChange={handleImageChange}
+                    onChange={handleFileChange}
                     className="hidden"
                 />
             </section>
 
-            {/* Preview */}
-
             {preview && (
                 <section>
                     <div className="mb-3 flex items-center justify-between">
+
                         <h2 className="text-lg font-semibold text-slate-900">
                             Preview
                         </h2>
@@ -176,6 +132,7 @@ export default function OcrScanner() {
                         >
                             Replace Image
                         </label>
+
                     </div>
 
                     <div
@@ -204,56 +161,6 @@ export default function OcrScanner() {
                     </div>
                 </section>
             )}
-
-            {/* OCR Button */}
-
-            <section>
-                <button
-                    onClick={scanImage}
-                    disabled={!image || loading}
-                    className="
-                        rounded-xl
-                        bg-blue-600
-                        px-5
-                        py-3
-                        font-medium
-                        text-white
-                        transition
-                        hover:bg-blue-700
-                        disabled:cursor-not-allowed
-                        disabled:opacity-50
-                    "
-                >
-                    {loading
-                        ? `Scanning ${progress}%`
-                        : "Extract Text"}
-                </button>
-            </section>
-
-            {/* Result */}
-
-            <section>
-                <h2 className="mb-3 text-lg font-semibold text-slate-900">
-                    Result
-                </h2>
-
-                <pre
-                    className="
-                        min-h-40
-                        whitespace-pre-wrap
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        bg-slate-50
-                        p-5
-                        text-slate-800
-                    "
-                >
-                    {text ||
-                        "No text detected yet."}
-                </pre>
-            </section>
-
-        </div>
+        </>
     );
 }
