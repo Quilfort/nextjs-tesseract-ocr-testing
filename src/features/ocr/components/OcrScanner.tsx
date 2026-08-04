@@ -8,11 +8,14 @@ import OcrEngineSelector, {
     OcrEngineType,
 } from "@/features/ocr/components/OcrEngineSelector";
 
-import { ocrEngine } from "@/features/ocr/services/OcrService";
+import {
+    ocrEngine,
+} from "@/features/ocr/services/OcrService";
 
 import {
     BasicImageProcessor,
 } from "@/features/ocr/image-processing/BasicImageProcessor";
+
 
 export default function OcrScanner() {
 
@@ -21,6 +24,12 @@ export default function OcrScanner() {
 
     const [preview, setPreview] =
         useState("");
+
+    const [
+        processedPreview,
+        setProcessedPreview,
+    ] = useState("");
+
 
     const [text, setText] =
         useState("");
@@ -31,13 +40,16 @@ export default function OcrScanner() {
     const [progress, setProgress] =
         useState(0);
 
+
     const [engine, setEngine] =
         useState<OcrEngineType>(
             "tesseract"
         );
 
+
     const imageProcessor =
         new BasicImageProcessor();
+
 
 
     async function scanImage() {
@@ -48,21 +60,36 @@ export default function OcrScanner() {
 
 
         setLoading(true);
+
         setText("");
+
         setProgress(0);
 
 
         try {
 
+            /*
+             * Step 1:
+             * Prepare image
+             */
             const processedImage =
                 await imageProcessor.process(
                     image
                 );
 
 
+            setProcessedPreview(
+                processedImage.preview
+            );
+
+
+            /*
+             * Step 2:
+             * OCR
+             */
             const result =
                 await ocrEngine.recognize(
-                    processedImage,
+                    processedImage.file,
                     setProgress
                 );
 
@@ -75,6 +102,7 @@ export default function OcrScanner() {
         } catch (error) {
 
             console.error(error);
+
 
             setText(
                 "Something went wrong while scanning the image."
@@ -89,6 +117,7 @@ export default function OcrScanner() {
     }
 
 
+
     return (
         <div className="space-y-8">
 
@@ -97,6 +126,7 @@ export default function OcrScanner() {
                 value={engine}
                 onChange={setEngine}
             />
+
 
 
             <ImageUpload
@@ -114,10 +144,65 @@ export default function OcrScanner() {
                             previewUrl
                         );
 
+
+                        // Clear old processing result
+                        setProcessedPreview("");
+
+
                         setText("");
+
                     }
                 }
             />
+
+
+
+            {
+                processedPreview && (
+
+                    <section>
+
+                        <h2
+                            className="
+                                mb-3
+                                text-lg
+                                font-semibold
+                                text-slate-900
+                            "
+                        >
+                            Processed Image
+                        </h2>
+
+
+                        <div
+                            className="
+                                overflow-hidden
+                                rounded-2xl
+                                border
+                                border-slate-200
+                                bg-white
+                                p-4
+                            "
+                        >
+
+                            <img
+                                src={processedPreview}
+                                alt="Processed image for OCR"
+                                className="
+                                    max-h-[500px]
+                                    w-auto
+                                    rounded-xl
+                                    object-contain
+                                "
+                            />
+
+                        </div>
+
+                    </section>
+
+                )
+            }
+
 
 
             <section>
@@ -150,6 +235,7 @@ export default function OcrScanner() {
                 </button>
 
             </section>
+
 
 
             <OcrResult

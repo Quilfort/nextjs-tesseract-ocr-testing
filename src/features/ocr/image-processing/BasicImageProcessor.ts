@@ -2,6 +2,7 @@ import imageCompression from "browser-image-compression";
 
 import {
     ImageProcessor,
+    ProcessedImage,
 } from "./ImageProcessor";
 
 
@@ -11,7 +12,7 @@ export class BasicImageProcessor
 
     async process(
         image: File
-    ): Promise<File> {
+    ): Promise<ProcessedImage> {
 
 
         const options = {
@@ -34,7 +35,19 @@ export class BasicImageProcessor
             );
 
 
-        return processed;
+        const preview =
+            URL.createObjectURL(
+                processed
+            );
+
+
+        return {
+
+            file: processed,
+
+            preview,
+
+        };
 
     }
 }

@@ -1,5 +1,13 @@
 export interface ImageProcessor {
     process(
         image: File
-    ): Promise<File>;
+    ): Promise<ProcessedImage>;
+
+}
+export interface ProcessedImage {
+
+    file: File;
+
+    preview: string;
+
 }
